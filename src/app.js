@@ -8,13 +8,26 @@ app.use(express.json());
 const users = [];
 const tweets = [];
 
+function last10(arr){
+    const last = [];
+    let size = arr.length - 1;
+    let limit = -1;
+    if(size > 9){
+        limit = size - 10;
+    }
+    for(let i=size; i > limit ; i--){
+        last.push(arr[i]);
+    }
+    return last;
+}
+
 app.post('/sign-up',(req,res) =>{
     if(!req.body.username || !req.body.avatar){
         res.status(400).send("Todos os campos são obrigatórios!")
         return;
     }
     users.push(req.body);
-    res.send("OK");
+    res.status(201).send("OK");
 });
 
 app.post('/tweets', (req,res) => {
@@ -26,20 +39,16 @@ app.post('/tweets', (req,res) => {
     const url = users.find(usuario => usuario.username === obj.username).avatar;
     obj.avatar = url;
     tweets.push(obj);
-    res.send("OK");
+    res.status(201).send("OK");
 });
 
 app.get('/tweets', (req,res) => {
-    const last10 = [];
-    let size = tweets.length - 1;
-    let limit = -1;
-    if(size > 9){
-        limit = size - 10;
-    }
-    for(let i=size; i > limit ; i--){
-        last10.push(tweets[i]);
-    }
-    res.send(last10)
+    res.send(last10(tweets));
+});
+
+app.get('/tweets/:USERNAME',(req,res) => {
+    const filteredtweets = tweets.filter(obj => obj.username === req.params.USERNAME);
+    res.send(last10(filteredtweets));
 });
 
 app.listen(5000);
