@@ -9,12 +9,20 @@ const users = [];
 const tweets = [];
 
 app.post('/sign-up',(req,res) =>{
+    if(!req.body.username || !req.body.avatar){
+        res.status(400).send("Todos os campos são obrigatórios!")
+        return;
+    }
     users.push(req.body);
     res.send("OK");
 });
 
 app.post('/tweets', (req,res) => {
     const obj = req.body;
+    if(!obj.username || !obj.tweet){
+        res.status(400).send("Todos os campos são obrigatórios!")
+        return;
+    }
     const url = users.find(usuario => usuario.username === obj.username).avatar;
     obj.avatar = url;
     tweets.push(obj);
